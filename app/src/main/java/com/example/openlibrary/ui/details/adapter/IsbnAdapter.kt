@@ -7,16 +7,25 @@ import com.example.openlibrary.R
 import com.example.openlibrary.data.model.Isbn
 import com.example.openlibrary.databinding.ItemIsbnBinding
 import com.example.openlibrary.utils.ImageLoader
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 
 class IsbnAdapter(private val isbns: ArrayList<Isbn>) : RecyclerView.Adapter<IsbnAdapter.IsbnViewHolder>() {
 
     class IsbnViewHolder(private val binding: ItemIsbnBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        lateinit var executor : ExecutorService
+
         fun bind(isbn: Isbn) {
             binding.isbnTextView.text = isbn.isbn
-            ImageLoader.load(isbn.image, binding.isbnImageView, R.drawable.im_placeholder, R.drawable.im_placeholder)
+            executor = ImageLoader().load(isbn.image, binding.isbnImageView, R.drawable.im_placeholder, R.drawable.im_placeholder)
         }
 
+    }
+
+    override fun onViewRecycled(holder: IsbnViewHolder) {
+        super.onViewRecycled(holder)
+        holder.executor.shutdownNow()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IsbnViewHolder {
